@@ -37,8 +37,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
+    # private function (convention) _
+    def _params_to_ints(self, qs):
+        return [int(str_id) for str_id in qs.split(',')]
+
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user) \
+        tags = self.request.query_params.get('tags')
+        ingredients = self.request.query_params.get('ingredients')
+
+        queryset = self.queryset
+        if tags:
+            tag_ids = self._params_to_ints(tags)
+            # django syntax for filtering in FK objects
+            queryset = queryset.filter(tags__id__in=tag_ids)
+
+        if ingredients:
+            ingredient_ids = self._params_to_ints(ingredients)
+            queryset = queryset.filter(ingredients__id__in=ingredient_ids)
+
+        return queryset.filter(user=self.request.user) \
             .order_by('-title')
 
     def perform_create(self, serializer):
