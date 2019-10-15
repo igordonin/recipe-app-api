@@ -47,3 +47,10 @@ class RecipeDetailSerializer(RecipeSerializer):
             'ingredients', 'tags'
         )
         read_only_fields = ('id',)
+
+
+class RecipeImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ('id', 'image')
+        read_only_fields = ('id',)
