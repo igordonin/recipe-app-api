@@ -1,6 +1,7 @@
 from core import models
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from unittest.mock import patch
 
 
 def sample_user(email='test@test.com', password='testpass'):
@@ -66,3 +67,10 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(recipe), recipe.title)
+
+    @patch('uuid.uuid4')
+    def test_recipe_file_name_uuid(self, mock_uuid):
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+
+        file_path = models.recipe_image_file_path(None, 'myimage.jpg')
